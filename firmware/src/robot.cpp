@@ -145,7 +145,7 @@ bool DampedLeastSquares() {
     setEVector();
 
     // Si el end effector está dentro de los límites, acepto la solución
-    if (e[0] * e[0] + e[1] * e[1] < limit && e[2] < 0.1)
+    if (e[0] * e[0] + e[1] * e[1] < limit && abs(e[2]) < 0.1)
         return true;
 
     getInvJacobian();
