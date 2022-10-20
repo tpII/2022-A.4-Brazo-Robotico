@@ -4,8 +4,8 @@
 #include "robot.h"
 
 /* Configuración de la red. */
-const char *ssid = "MANCHI"; // WIFI ssid
-const char *password = "32117917"; // WIFI password
+const char *ssid = "SSID";// WIFI ssid
+const char *password = "password"; // WIFI password
 
 // Estructura de datos de un punto
 typedef struct Point {
