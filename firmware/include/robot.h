@@ -6,7 +6,13 @@
 #define L2 5.0
 #define L3 5.0
 #define L4 5.0
-#define L5 5.0
+#define L5 3.7
+
+// Offset lateral del lapiz respecto al centro del brazo
+#define D2 -2.7
+
+// Altura que debe levantar al lápiz
+#define Z0 2.0
 
 // Término usado en Damped Least Squares
 #define lambdaSq 50.0
@@ -24,7 +30,13 @@
  * @param {Number} y Posición Y del target
  * @param {Number} z Posición Z del target
  */
-void solveFor(double x, double y, double z);
+void RobotSolveFor(double x, double y, double z);
+
+String RobotGetDimensions();
 
 // Retorna una cadena de texto que representa las posiciones angulares de las articulaciones
 String anglesToStr();
+
+void RobotMoveArm();
+
+void RobotHome();

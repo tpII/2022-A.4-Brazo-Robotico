@@ -2,6 +2,13 @@
 
 #define SQRT2 1.4142135623730951 // Raíz de 2
 
+// Estructura de datos de un punto
+typedef struct Point {
+    float x;
+    float y;
+    bool up; // Si está en UP => z=1, sino z=0
+} Point;
+
 /**
  * Esta función obtiene la transpuesta de una matriz
  * @param {Matrix} mat Matriz fuente de mxn
@@ -20,7 +27,7 @@ void transposeMxN(double* mat, double* t, int m, int n);
  * @param {Integer} n Número de columnas de A y filas de B
  * @param {Integer} g Número de columnas de B. Si no se define, por defecto es m
  */
-void matMultiplication(double* A, double* B, double* C, int m, int n, int g = 0);
+void matMultiplication(double* A, double* B, double* C, int m, int n, int g);
 
 /**
  * Esta función obtiene la matriz inversa de una matriz dada.

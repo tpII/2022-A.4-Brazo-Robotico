@@ -1,4 +1,6 @@
 #include "robot.h"
+#include "servos.h"
+#include "base_motor.h"
 
 // Máximo radio en cm de dibujo que puede alcanzar el brazo.
 // Se obtiene considerando la máxima extensión del mismo mientras el EE toque la hoja
@@ -46,8 +48,8 @@ void setEndEffector() {
         L3 * cos(q2 + q3) +
         L4 * cos(q2 + q3 + q4) +
         L5 * cos(q2 + q3 + q4 + q5);
-    ex = cos(q1) * r;
-    ey = sin(q1) * r;
+    ex = cos(q1) * r + D2 * sin(q1);
+    ey = sin(q1) * r - D2 * cos(q1);
     ez = L1 + L2 * sin(q2) + L3 * sin(q2 + q3) + L4 * sin(q2 + q3 + q4) + L5 * sin(q2 + q3 + q4 + q5);
 }
 
@@ -78,12 +80,12 @@ void setJacobian() {
     double a3 = (L3*s23 + L4*s234 + L5*s2345);
     double a4 = (L4*s234 + L5*s2345);
     double a5 = (L5*s2345);
-    J[0] = -s1 * b1;
+    J[0] = -s1 * b1 + D2 * c1;
     J[1] = -c1 * a2;
     J[2] = -c1 * a3;
     J[3] = -c1 * a4;
     J[4] = -c1 * a5;
-    J[5] =  c1 * b1;
+    J[5] =  c1 * b1 + D2 * s1;
     J[6] = -s1 * a2;
     J[7] = -s1 * a3;
     J[8] = -s1 * a4;
@@ -117,7 +119,7 @@ void getInvJacobian() {
     setJacobian();                              // Inicializo la matriz Jacobiana de la posición actual
     //sprintMatrix(J, 6, 5);
     transposeMxN(J, Jt, 6, 5);                  // Jt = transpuesta(J)
-    matMultiplication(J, Jt, JJt, 6, 5);        // JJt = J x Jt
+    matMultiplication(J, Jt, JJt, 6, 5, 0);        // JJt = J x Jt
     // printMatrix(Jt, 6, 5)
     for (int i = 0; i < 6; i++)                 // JJt = JJt + lambdaSq * I
         JJt[i * 6 + i] += lambdaSq;
@@ -162,7 +164,7 @@ bool DampedLeastSquares() {
  * @param {Number} y Posición Y del target
  * @param {Number} z Posición Z del target
  */
-void solveFor(double x, double y, double z) {
+void RobotSolveFor(double x, double y, double z) {
     // Inicializo el vector target
     tx = x; ty = y; tz = z;
 
@@ -186,7 +188,31 @@ void solveFor(double x, double y, double z) {
     Serial.println("El brazo no pudo alcanzar la posicion en " + String(MAX_ITERATIONS));
 }
 
+String RobotGetDimensions() {
+    return String(width) + "|" + String(height);
+}
+
 // Retorna una cadena de texto que representa las posiciones angulares de las articulaciones
 String anglesToStr() {
     return "q1: " + String(q1, 4) + ", q2: " + String(q2, 4) + ", q3: " + String(q3, 4) + ", q4: " + String(q4, 4) + ", q5: " + String(q5, 4);
+}
+
+void RobotMoveArm() {
+    ServosSetAngles(q2, q3, q4, q5);
+    BaseMotorSetAngle(q1);
+    int i = 10;
+
+    while (!BaseMotorFinished() || !ServosFinished()) {
+        if (i-- == 0) {
+            i = 10;
+            BaseMotorUpdate();
+        } else
+            delay(5);
+        ServosUpdate();
+    }
+}
+
+void RobotHome() {
+    ServosHome();
+    BaseMotorHome();
 }

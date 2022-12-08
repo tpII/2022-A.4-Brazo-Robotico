@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="app.css">
+        <script src="UserCanvas.js"></script>
+        <title>Brazo Robótico</title>
+    </head>
+    <body>
+        <input id="ip" placeholder="IP de Robot">
+        <button id="my_button">Conectar</button><br>
+        <div style="">
+            Q2: <button id="q2p">+</button><button id="q2n">-</button><br>
+            Q3: <button id="q3p">+</button><button id="q3n">-</button><br>
+            Q4: <button id="q4p">+</button><button id="q4n">-</button><br>
+            Q5: <button id="q5p">+</button><button id="q5n">-</button><br>
+        </div>
+        <br>
+        <br>
+
+        <canvas id="canvas"></canvas>
+        <br>
+        <button id="sendBtn">Dibujar ✏️</button>
+        <button onclick="UserCanvas.clear()">Borrar ❌</button>
+        <br>
+        <br>
+        <span id="msg" style="font-size:20px"></span>
+        <script>
+            const my_button = document.getElementById("my_button")
+            const input_ip  = document.getElementById("ip")
+            const sendBtn   = document.getElementById("sendBtn")
+            const msg       = document.getElementById("msg")
+            const xhr = new XMLHttpRequest()
+
+            const moveSend = (q, d) => () => {
+                xhr.open("POST", "/move", true)
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+                xhr.send(`q=${q}&d=${d}`)
+            }
+            
+            for (let i = 2; i <= 5; i++) {
+                document.getElementById("q" + i + "p").onclick = moveSend(i, "p")
+                document.getElementById("q" + i + "n").onclick = moveSend(i, "n")
+            }
+
+            my_button.onclick = () => {
+                xhr.open("POST", "/connect", true)
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+                xhr.send("ip=" + input_ip.value)
+            }
+
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    sendBtn.disabled = false
+
+                    if (xhr.status === 200) {
+                        if (xhr.response === "connected") {
+                            alert("Conectado")
+                        } else if (xhr.response === "end_draw") {
+                            msg.innerText = "Finalizó 😁"
+                        } else {
+                            alert(xhr.response)
+                        }
+                    }
+                }
+            }
+
+            const base = 13.4
+            const altura = 10.00
+            const minRadius = 3.3
+            const maxRadius = 14.92
+            UserCanvas.init()
+
+            sendBtn.onclick = () => {
+                xhr.open("POST", "/draw", true)
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+                xhr.send("q=" + UserCanvas.points.length + "&ps=" + UserCanvas.toString())
+
+                msg.innerText = "Dibujando... ✏️"
+                sendBtn.disabled = true
+            }
+
+        </script>
+    </body>
+</html>
