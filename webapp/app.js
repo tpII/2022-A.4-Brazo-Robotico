@@ -37,15 +37,17 @@ app.post("/connect", (req, res) => {
     }
 })
 
-app.post("/move", (req, res) => {
-    axios
-        .post(`http://${robotIp}/m${req.body.q}${req.body.d}`)
-        .then(res => {
-            console.log(`Status: ${res.status})`)
+app.post("/dim", (req, res) => {
+    axios({
+        method: "get",
+        url: `http://${robotIp}/dim`,
+        timeout: 5000
+    })
+        .then(r => {
+            if (r.status === 200)
+                res.end(r.data)
         })
-        .catch(err => {
-            console.error(err)
-        })
+        .catch(error => res.end(error.code))
 })
 
 app.post("/draw", (req, res) => {
@@ -59,4 +61,22 @@ app.post("/draw", (req, res) => {
         .catch(err => {
             console.error(err)
         })
+})
+
+app.post("/move", (req, res) => {
+    if (req.body) {
+        console.log(`m${req.body.q}${req.body.d}`)
+        axios({
+            method: "get",
+            url: `http://${robotIp}/m${req.body.q}${req.body.d}`,
+            timeout: 5000
+        })
+            .then(r => {
+                console.log("Connect: " + r.status)
+                res.end("connected")
+            })
+            .catch(error => res.end(error.code))
+    } else {
+        res.end("Falta IP")
+    }
 })

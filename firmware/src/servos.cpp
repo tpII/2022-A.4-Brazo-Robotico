@@ -6,7 +6,7 @@ Servo servoQ2, servoQ3, servoQ4, servoQ5;
 int s_target[] = {800, 500, 800, 1250};
 int s_delay[] = {0, 0, 0, 0};
 int s_delayCount[] = {0, 0, 0, 0};
-int servos_finish = 4;
+int servos_finish = 3;
 
 void moveTo(Servo *servo, int pos) {
     if (pos < 250 || pos > 2000)
@@ -93,7 +93,7 @@ void ServosHome() {
 
 void ServosUpdate() {
     // Mueve los servos hasta el objetivo
-    if (servos_finish == 4)
+    if (servos_finish == 3)
         return;
 
     servos_finish = 0;
@@ -109,17 +109,22 @@ void ServosUpdate() {
         servos_finish += updateServo(&servoQ4, s_target[2]);
         s_delayCount[2] = s_delay[2];
     }
-    if (s_delayCount[3]-- == 0) {
+    /*if (s_delayCount[3]-- == 0) {
         servos_finish += updateServo(&servoQ5, s_target[3]);
         s_delayCount[3] = s_delay[3];
-    }
+    }*/
+    float q2 = (1253.2 - servoQ2.readMicroseconds()) / 587.69;
+    float q3 = (128.21 - servoQ3.readMicroseconds()) / 628.21;
+    float q4 = (340.35 - servoQ4.readMicroseconds()) / 596.71;
+    servoQ5.writeMicroseconds(constrain(1020.7 - 603.8 * (-PI * .5 - q2 - q3 - q4), 300, 2000));
 }
 
 void ServosSetAngles(float q2, float q3, float q4, float q5) {
     s_target[0] = constrain(1253.2 - 587.69 * q2, 300, 2000);
     s_target[1] = constrain(128.21 - 628.21 * q3, 300, 2000);
-    s_target[2] = constrain(308.73 - 592.40 * q4, 300, 2000);
-    s_target[3] = constrain(1031.4 - 605.65 * q5, 300, 2000);
+    //s_target[2] = constrain(308.73 - 592.40 * q4, 300, 2000);
+    s_target[2] = constrain(340.35 - 596.71 * q4, 300, 2000);
+    s_target[3] = constrain(1020.7 - 603.8 * q5, 300, 2000);
 
     setDelays();
 
@@ -127,7 +132,7 @@ void ServosSetAngles(float q2, float q3, float q4, float q5) {
 }
 
 bool ServosFinished() {
-    return servos_finish == 4;
+    return servos_finish == 3;
 }
 
 void ServosMove(int servo, int d) {
@@ -136,4 +141,5 @@ void ServosMove(int servo, int d) {
              : servo == 4 ? &servoQ4
                           : &servoQ5;
     s->writeMicroseconds(s->readMicroseconds() + d);
+    Serial.println("S" + String(servo) + ":" + String(s->readMicroseconds()));
 }

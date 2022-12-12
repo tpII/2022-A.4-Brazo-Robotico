@@ -1,5 +1,6 @@
 body {
-    background: #35456a;
+    background: linear-gradient(42deg, #3b1d6c, #4195ff);
+    background-attachment: fixed;
     color: #fff;
     text-align: center;
     font-size: 15px;
@@ -8,7 +9,7 @@ body {
 
 canvas {
     background: #FFF;
-    box-shadow: 1px 2px 20px 0px black; 
+    box-shadow: 1px 2px 20px 0px #0f3550; 
 }
 
 input {
@@ -20,6 +21,10 @@ input {
     text-align: center;
     border: none;
     border-bottom: 2px solid;
+}
+
+input::placeholder {
+    color: #c2cfd5;
 }
 
 button {
@@ -42,4 +47,39 @@ button:disabled {
     background: none;
     border: 1px solid white;
     cursor: auto;
+}
+
+
+.slidecontainer {
+    padding:10px;
+}
+
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #1b389f;
+    outline: none;
+    padding: 0;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    border: 0;
+    border-radius: 3px;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none;
+    width: 30px;
+    height: 15px;
+    border-radius: 10px;
+    background: #4e9bff;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px; 
+    height: 25px;
+    background: #04AA6D;
+    cursor: pointer;
 }

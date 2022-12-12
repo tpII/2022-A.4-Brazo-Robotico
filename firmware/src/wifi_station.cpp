@@ -96,12 +96,12 @@ void WiFiSetup() {
 
     // Conectar a la red WiFi
     WiFi.begin(SSID, PASSWORD);
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED) { 
+        delay(100); Serial.print("_");
         delay(100); Serial.print(".");
-        delay(100); Serial.print("o");
-        delay(100); Serial.print("O");
-        delay(100); Serial.print("o");
+        delay(100); Serial.print("~");
         delay(100); Serial.print(".");
+        delay(100); Serial.print("_");
     }
 
     // Éxito
@@ -116,6 +116,32 @@ void WiFiSetup() {
     server.on("/draw", handleDraw);
     server.on("/connect", []() {
         server.send(200, "text/plain", "OK");
+    });
+
+    // DEBUG
+    server.on("/m2p", []() {
+        ServosMove(2, 10);
+    });
+    server.on("/m2n", []() {
+        ServosMove(2, -10);
+    });
+    server.on("/m3p", []() {
+        ServosMove(3, 10);
+    });
+    server.on("/m3n", []() {
+        ServosMove(3, -10);
+    });
+    server.on("/m4p", []() {
+        ServosMove(4, 10);
+    });
+    server.on("/m4n", []() {
+        ServosMove(4, -10);
+    });
+    server.on("/m5p", []() {
+        ServosMove(5, 10);
+    });
+    server.on("/m5n", []() {
+        ServosMove(5, -10);
     });
 
     // Inicia el servidor
